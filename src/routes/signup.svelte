@@ -185,27 +185,22 @@
 
         let formdata = new FormData(form);
 
-        let file = document.getElementById('files');
+        
 
-        let files = file.files;
-
-        if(files){
-            for(var x = 0; x < files.length; x++){
-                formdata.append('Documents[]',files[x]);
-            }
+        if(!listOfOwners.some(con => con.PrimaryContact === true) || !listOfContacts.some(con => con.PrimaryContact === true)){
+            setError("You alteast need to select one primary contact and owner for the business.");
+            return;
         }
 
-        listOfContacts.forEach(c=>{
-            formdata.append('Contacts[]',c);
-        });
+        formdata.append('Contact',JSON.stringify(listOfContacts));
 
-        listOfOwners.forEach(o=>{
-            formdata.append('Owners[]',o);
-        });
+        formdata.append('Owner',JSON.stringify(listOfOwners));
+
+        formdata.append('IsFranchise',isChecked);
 
         axios({
             method: 'post',
-            url: 'myurl',
+            url: 'https://localhost:44364/api/entry/Signup',
             data: formdata,
             headers: {'Content-Type': 'multipart/form-data' }
             })
@@ -409,7 +404,7 @@
                         <div class="file-field input-field col l10 s12">
                             <div class="btn">
                                 <span>* Company Document(s)</span>
-                                <input type="file" id="files" multiple validate required>
+                                <input type="file" name="Docs" multiple validate required>
                             </div>
                             <div class="file-path-wrapper">
                                 <input class="file-path validate" type="text" placeholder="upload all your company document(s) here.">
@@ -479,7 +474,7 @@
                     <div class="col s12">
                         <h5>Additional Information</h5>
                         <p>
-                            <input on:click={() => isChecked == false ? isChecked = true : isChecked = false} type="checkbox" class="filled-in" id="filled-in-box" name="IsFranchise"/>
+                            <input on:click={() => isChecked == false ? isChecked = true : isChecked = false} type="checkbox" class="filled-in" id="filled-in-box"/>
                             <label for="filled-in-box">Franchise</label>
                         </p>
                     </div>
